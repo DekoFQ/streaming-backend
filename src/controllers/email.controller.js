@@ -4,17 +4,32 @@ const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: 'dieguito12557@gmail.com',
-        pass: 'wguesrhwrvnineay',
+        pass: 'xweoudvpmvgpjmjx',
     }
 })
 
-export const sendEmail = async (email, firstName, lastName) => {
+export const sendEmailWelcome = async (email, firstName, lastName) => {
     try {
         const info = await transporter.sendMail({
             from: "Diego",
             to: email,
             subject: "Bienvenido a nuestra plataforma de Steaming",
-            html: `<h1>Hola ${firstName} ${lastName}</h1><p>Te hemos registrado en nuestra plataforma</p>`
+            html: `<!DOCTYPE html>
+            <html>
+            <body style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
+                <div style="background-color: #ffffff; padding: 30px; border-radius: 10px; max-width: 600px; margin: auto;">
+                    <h2 style="color: #e50914;">🎬 ¡Hola ${firstName} ${lastName} Bienvenido nuestra plataforma de Streaming! 🌴</h2>
+                    <p>Gracias por registrarte. Estás a un clic de empezar a disfrutar contenido sin límites.</p>
+                    <p>Haz clic en el siguiente botón para empezar a explorar:</p>
+      
+                <a href="https://www.netflix.com" target="_blank" style="display: inline-block; padding: 12px 24px; background-color: #e50914; color: #ffffff; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                    🌟 Ir a la plataforma
+                </a>
+      
+                    <p style="margin-top: 30px;">Nos alegra tenerte con nosotros,<br>— El equipo de Streaming</p>
+                </div>
+            </body>
+            </html>`
         })
 
         console.log('Correo enviado:', info.messageId);
