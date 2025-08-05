@@ -1,17 +1,20 @@
 import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
+dotenv.config();
+
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'dieguito12557@gmail.com',
-        pass: 'xweoudvpmvgpjmjx',
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
     }
 })
 
 export const sendEmailWelcome = async (email, firstName, lastName) => {
     try {
         const info = await transporter.sendMail({
-            from: "Diego",
+            from: process.env.EMAIL_USER,
             to: email,
             subject: "Bienvenido a nuestra plataforma de Steaming",
             html: `<!DOCTYPE html>

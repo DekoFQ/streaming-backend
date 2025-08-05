@@ -11,6 +11,12 @@ const clientSchema = new Schema({
     lastName: {type: String, required: true},
     phone: { type: String, required: true},
     email: { type: String, required: true},
+    // Aquí se puede agregar una referencia a los productos
+    productId: {
+        type: String,
+        ref: 'products',
+        required: true
+    }
 },
 {
     _id: false,

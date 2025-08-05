@@ -1,31 +1,55 @@
 import clientModel from "../models/client.model.js";
+import clientProductModel from "../models/clientProduct.model.js";
 import { sendEmailWelcome } from "./email.controller.js";
 
 // Crear un nuevo Cliente
 // Se crea el cliente y se envía un correo de bienvenida
 export const createClient = async (req, res) => {
     try {
-        const { firstName, lastName, phone, email } = req.body;
+        const { _id } = req.params;
+        const { firstName, lastName, phone, email, productId } = req.body;
 
-        const clientFound = await clientModel.find({ email, phone });
+        const clientFound = await clientModel.findOne({
+            $or: [{ email }, { phone }]
+        })
 
-        if (clientFound == email) {
-            return res.status(400).json({ message: "Ya existe un cliente con ese Email" });
-        } else if (clientFound == phone) {
-            return res.status(400).json({ message: "Ya existe un cliente con ese numero de celular" });
+        console.log("Cliente encontrado:", clientFound);
+
+        if (clientFound)
+            return res.status(400).json({ message: "Ya existe un cliente con ese Email o con ese numero telefonico" });
+
+        const relationFound = await clientProductModel.findOne({
+            clientId: _id,
+            productId: productId
+        });
+
+        if (relationFound && relationFound.active === true) {
+            return res.status(400).json({ message: "El cliente, ya cuenta con este producto activo" });
         }
+
+        // console.log("Relación encontrada:", relationFound);
 
         const newClient = await new clientModel({
             firstName,
             lastName,
             phone,
-            email
+            email,
+            productId
         }).save();
+
+
+
+        const newRelation = await new clientProductModel({
+            clientId: newClient._id,
+            productId: productId,
+            active: true
+        }).save();
+
 
         // Enviar correo de bienvenida
         await sendEmailWelcome(email, firstName, lastName);
 
-        console.log(newClient);
+        console.log("Nuevo Cliente creado", newClient);
 
 
         res.status(201).json({ message: 'Usuario registrado y correo enviado' });
@@ -66,7 +90,7 @@ export const getClientById = async (req, res) => {
 export const updateClient = async (req, res) => {
     try {
 
-        const updateClient = await clientModel.findByIdAndUpdate(req.params._id, req.body, {new: true});
+        const updateClient = await clientModel.findByIdAndUpdate(req.params._id, req.body, { new: true });
         if (!updateClient) return res.status(404).json({ message: "Cliente no encontrado" });
 
         res.json(clientFound);
@@ -77,14 +101,14 @@ export const updateClient = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 }
-
+// Eliminar Cliente por ID
 export const deleteClient = async (req, res) => {
     try {
 
         const deleteClient = await clientModel.findByIdAndDelete(req.params._id);
         if (!deleteClient) return res.status(404).json({ message: "Cliente no encontrado" });
 
-        res.json({menssage: "Cliente eliminado exitosamente"});
+        res.json({ menssage: "Cliente eliminado exitosamente" });
         console.log("Cliente eliminado:", deleteClient);
 
     } catch (error) {
