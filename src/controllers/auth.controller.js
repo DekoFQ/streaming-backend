@@ -46,14 +46,14 @@ export const login = async (req, res) => {
     const {email, password} = req.body
 
     if (!email || !password)
-      return res.status(400).json({ message: 'Email and password are required' });
+      return res.status(400).json({ message: 'Email y contraseña requeridos' });
 
     const userFound = await usersModel.findOne({email})
-    if (!userFound) return res.status(404).json({ message: 'User not found' })
+    if (!userFound) return res.status(404).json({ message: 'Usuario no existente' })
 
     // Comparación de contraseña entrante con la que está en base de datos. Devuelve true o false
     const isMatch = await bcryptjs.compare(password, userFound.password)
-    if (!isMatch) return res.status(400).json({ message: 'Incorrect password' })
+    if (!isMatch) return res.status(400).json({ message: 'Contraseña incorrecta' })
 
     // Se crea token
     const token = await createAccessToken({_id: userFound._id})
