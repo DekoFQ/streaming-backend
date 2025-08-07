@@ -30,7 +30,7 @@ const saleSchema = new Schema({
 
     Status: {
         type: String,
-        enum: ["Completada", "Pendiente", "Cancelada"],
+        enum: ["Activa", "Pendiente", "Cancelada"],
         default: "Pendiente"
     }
 },

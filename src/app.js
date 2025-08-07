@@ -6,8 +6,9 @@ import cookieParser from 'cookie-parser';
 // Rutas
 import authRoutes from './routes/auth.routes.js';
 import entityRoutes from './routes/entity.routes.js'; // de Diego-Romero
-//import clientRoutes from './routes/client.routes.js'; // de santiago
+import clientRoutes from './routes/client.routes.js'; // de santiago
 import productRoutes from './routes/product.routes.js';
+import saleRoutes from './routes/sale.routes.js';
 
 const app = express();
 
@@ -37,7 +38,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Rutas
-app.use('/api', authRoutes, entityRoutes, /*clientRoutes,*/ productRoutes);
+app.use('/api', authRoutes, entityRoutes, clientRoutes, productRoutes, saleRoutes);
 
 // Conexión y servidor
 connectDB();
