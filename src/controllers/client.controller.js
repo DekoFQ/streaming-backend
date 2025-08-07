@@ -1,5 +1,5 @@
-import clientModel from "../models/client.model.js";
-import clientProductModel from "../models/clientProduct.model.js";
+// import clientModel from "../models/client.model.js";
+// import clientProductModel from "../models/clientProduct.model.js";
 import { sendEmailWelcome } from "./email.controller.js";
 
 // Crear un nuevo Cliente
@@ -18,14 +18,14 @@ export const createClient = async (req, res) => {
         if (clientFound)
             return res.status(400).json({ message: "Ya existe un cliente con ese Email o con ese numero telefonico" });
 
-        const relationFound = await clientProductModel.findOne({
-            clientId: _id,
-            productId: productId
-        });
+        // const relationFound = await clientProductModel.findOne({
+        //     clientId: _id,
+        //     productId: productId
+        // });
 
-        if (relationFound && relationFound.active === true) {
-            return res.status(400).json({ message: "El cliente, ya cuenta con este producto activo" });
-        }
+        // if (relationFound && relationFound.active === true) {
+        //     return res.status(400).json({ message: "El cliente, ya cuenta con este producto activo" });
+        // }
 
         // console.log("Relación encontrada:", relationFound);
 
@@ -39,11 +39,11 @@ export const createClient = async (req, res) => {
 
 
 
-        const newRelation = await new clientProductModel({
-            clientId: newClient._id,
-            productId: productId,
-            active: true
-        }).save();
+        // const newRelation = await new clientProductModel({
+        //     clientId: newClient._id,
+        //     productId: productId,
+        //     active: true
+        // }).save();
 
 
         // Enviar correo de bienvenida
