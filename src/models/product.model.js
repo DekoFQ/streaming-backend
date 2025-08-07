@@ -6,7 +6,6 @@ const collectionName = "products";
 
 const productsSchema = new Schema({
     _id: { type: String, default: uuidv4 },
-    
     email: { type: String, required: true, unique: true},
     password: { type: String, required: true, minLength: 6 },
     active: { type: Boolean, default: true },

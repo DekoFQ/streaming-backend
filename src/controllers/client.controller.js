@@ -1,33 +1,23 @@
-// import clientModel from "../models/client.model.js";
-// import clientProductModel from "../models/clientProduct.model.js";
+import userModel from "../models/user.model.js";
 import { sendEmailWelcome } from "./email.controller.js";
 
 // Crear un nuevo Cliente
 // Se crea el cliente y se envía un correo de bienvenida
 export const createClient = async (req, res) => {
     try {
-        const { _id } = req.params;
-        const { firstName, lastName, phone, email, productId } = req.body;
+        
+        const { firstName, lastName, email, password } = req.body;
 
-        const clientFound = await clientModel.findOne({
-            $or: [{ email }, { phone }]
-        })
+        // Se utiliza para buscar por el email o el telefono
+        // const clientFound = await clientModel.findOne({
+        //     $or: [{ email }, { phone }]
+        // })
 
-        console.log("Cliente encontrado:", clientFound);
+
+        const clientFound = await userModel.findOne({ email });
 
         if (clientFound)
-            return res.status(400).json({ message: "Ya existe un cliente con ese Email o con ese numero telefonico" });
-
-        // const relationFound = await clientProductModel.findOne({
-        //     clientId: _id,
-        //     productId: productId
-        // });
-
-        // if (relationFound && relationFound.active === true) {
-        //     return res.status(400).json({ message: "El cliente, ya cuenta con este producto activo" });
-        // }
-
-        // console.log("Relación encontrada:", relationFound);
+            return res.status(400).json({ message: "Ya existe un cliente con ese Email" });
 
         const newClient = await new clientModel({
             firstName,
@@ -35,19 +25,11 @@ export const createClient = async (req, res) => {
             phone,
             email,
             productId
-        }).save();
-
-
-
-        // const newRelation = await new clientProductModel({
-        //     clientId: newClient._id,
-        //     productId: productId,
-        //     active: true
-        // }).save();
+        });
 
 
         // Enviar correo de bienvenida
-        await sendEmailWelcome(email, firstName, lastName);
+        await sendEmailWelcome(email, password, firstName, lastName);
 
         console.log("Nuevo Cliente creado", newClient);
 

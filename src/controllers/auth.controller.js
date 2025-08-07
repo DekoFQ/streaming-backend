@@ -28,6 +28,7 @@ export const register = async (req, res) => {
       active
     }).save()
 
+    // Esta parte es para enviar un correo de bienvenida al usuario y sin consumo de producto
     await sendEmailWelcome(email, firstName, lastName, "https://www.netflix.com");
 
     console.log("Nuevo usuario creado", newUser);
