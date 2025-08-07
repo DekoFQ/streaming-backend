@@ -11,7 +11,8 @@ const entitySchema = new Schema({
     logoUrl: { type: String },
     link: { type: String },
     maxUsers: { type: Number },
-    price: { type: Number }
+    price: { type: Number },
+    available: { type: Boolean, default: true}
 }, {
     _id: false,
     versionKey: false,
