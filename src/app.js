@@ -4,7 +4,7 @@ import {connectDB} from "./db.js"
 
 // Rutas
 import authRoutes from "./routes/auth.routes.js"
-import clientRoutes from "./routes/client.routes.js"
+import entityRoutes from "./routes/entity.routes.js"
 import productRoutes from "./routes/product.routes.js"
 import cookieParser from "cookie-parser"
 
@@ -14,7 +14,7 @@ app.use(cors());
 
 app.use(express.json())
 app.use(cookieParser())
-app.use("/api", authRoutes, clientRoutes, productRoutes)
+app.use("/api", authRoutes, entityRoutes, productRoutes)
 
 console.log("AMEN")
 connectDB()

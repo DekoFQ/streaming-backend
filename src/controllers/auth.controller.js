@@ -2,18 +2,19 @@ import usersModel from "../models/users.model.js";
 import bcryptjs from "bcryptjs";
 import { createAccessToken } from "../libs/jwt.js"
 import jwt from "jsonwebtoken"
+import { sendEmailWelcome } from "./email.controller.js";
 
 export const register = async (req, res) => {
   try {
     // Trabajado con metodo POST
-    const { firstName, lastName, email, password, rol } = req.body;
+    const { firstName, lastName, email, password, rol, active } = req.body;
 
     // desde aqui se estan validando que no hayan usuarios existentes con el mismo Email
     // findOne, find(Todos los datos), se utiliza para buscar en la base de datos
     const userFound = await usersModel.findOne({ email })
 
     if (userFound)
-      return res.status(400).json({ menssage: "Esta Repetido :c" })
+      return res.status(400).json({ menssage: "Este correo ya esta registrado" })
 
     const passwordHash = await bcryptjs.hash(password, 10)
 
@@ -23,8 +24,14 @@ export const register = async (req, res) => {
       lastName,
       email,
       password: passwordHash,
-      rol
+      rol,
+      active
     }).save()
+
+    await sendEmailWelcome(email, firstName, lastName, "https://www.netflix.com");
+
+    console.log("Nuevo usuario creado", newUser);
+    console.log("Usuario creado con exito");
 
     // Creación del token
     const token = await createAccessToken({ _id: newUser._id })

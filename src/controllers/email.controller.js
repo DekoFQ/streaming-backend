@@ -10,8 +10,8 @@ const transporter = nodemailer.createTransport({
         pass: process.env.EMAIL_PASS
     }
 })
-
-export const sendEmailWelcome = async (email, firstName, lastName) => {
+// "https://www.netflix.com"
+export const sendEmailWelcome = async (email, firstName, lastName, linkEntity) => {
     try {
         const info = await transporter.sendMail({
             from: process.env.EMAIL_USER,
@@ -25,7 +25,7 @@ export const sendEmailWelcome = async (email, firstName, lastName) => {
                     <p>Gracias por registrarte. Estás a un clic de empezar a disfrutar contenido sin límites.</p>
                     <p>Haz clic en el siguiente botón para empezar a explorar:</p>
       
-                <a href="https://www.netflix.com" target="_blank" style="display: inline-block; padding: 12px 24px; background-color: #e50914; color: #ffffff; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                <a href="${linkEntity}" target="_blank" style="display: inline-block; padding: 12px 24px; background-color: #e50914; color: #ffffff; text-decoration: none; border-radius: 5px; font-weight: bold;">
                     🌟 Ir a la plataforma
                 </a>
       
