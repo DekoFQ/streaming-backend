@@ -3,15 +3,13 @@ import express from 'express';
 import { connectDB } from './db.js';
 import cookieParser from 'cookie-parser';
 
-// Rutas
 import authRoutes from './routes/auth.routes.js';
-import entityRoutes from './routes/entity.routes.js'; // de Diego-Romero
-//import clientRoutes from './routes/client.routes.js'; // de santiago
+import entityRoutes from './routes/entity.routes.js'; 
+//import clientRoutes from './routes/client.routes.js'; 
 import productRoutes from './routes/product.routes.js';
 
 const app = express();
 
-// Lista de orígenes permitidos
 const allowedOrigins = [
   'http://localhost:5500',
   'http://127.0.0.1:5500',
@@ -19,7 +17,7 @@ const allowedOrigins = [
   'http://127.0.0.1:5501',
 ];
 
-// CORS dinámico
+//CORs
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -32,14 +30,11 @@ app.use(cors({
   credentials: true
 }));
 
-// Middlewares
 app.use(express.json());
 app.use(cookieParser());
 
-// Rutas
 app.use('/api', authRoutes, entityRoutes, /*clientRoutes,*/ productRoutes);
 
-// Conexión y servidor
 connectDB();
 app.listen(3000, () => {
   console.log('🚀 SERVER ON PORT', 3000);

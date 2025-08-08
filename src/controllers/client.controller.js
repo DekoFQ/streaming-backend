@@ -1,4 +1,4 @@
-// import clientModel from "../models/client.model.js";
+import clientModel from "../models/client.model.js";
 // import clientProductModel from "../models/clientProduct.model.js";
 import { sendEmailWelcome } from "./email.controller.js";
 
