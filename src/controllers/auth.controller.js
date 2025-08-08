@@ -100,13 +100,15 @@ export const profile = async (req, res) => {
 
   return res.json({
     _id: userFound._id,
-    username: userFound.username,
+    firstName: userFound.firstName,
+    lastName: userFound.lastName,
     email: userFound.email,
     rol: userFound.rol,
     createdAt: userFound.createdAt,
     updatedAt: userFound.updatedAt
   });
 };
+
 
 
 
