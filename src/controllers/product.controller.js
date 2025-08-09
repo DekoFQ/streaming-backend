@@ -72,8 +72,14 @@ export const updateProduct = async (req, res) => {
         const {email, password, entity, active} = req.body;
         const { _id } = req.params;
 
+
         const productFound = await productModel.findById({ _id });
         if (!productFound) return res.status(404).json({ message: "Producto no encontrado" });
+
+        const productFound = await productModel.findOne({ _id });
+ 
+        
+
 
         if (entity && entity !== productFound.entity.toString()) {
             const entityFound = await entityModels.findById(entity);
