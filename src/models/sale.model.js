@@ -24,13 +24,13 @@ const saleSchema = new Schema({
         entityId: { type: String, required: true },
     },
 
-    paymentMethod: {type: String, },
+    paymentMethod: {type: String },
     salePrice: {type: Number},
     saleDate: { type: Date, default: Date.now },
 
     Status: {
         type: String,
-        enum: ["Completada", "Pendiente", "Cancelada"],
+        enum: ["Activa", "Pendiente", "Cancelada"],
         default: "Pendiente"
     }
 },
@@ -39,3 +39,5 @@ const saleSchema = new Schema({
     versionKey: false,
     timestamps: true
 });
+
+export default mongoose.model(collectionName, saleSchema);
