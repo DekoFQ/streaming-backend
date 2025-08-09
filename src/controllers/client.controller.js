@@ -35,7 +35,8 @@ export const createClient = async (req, res) => {
 // Traer el listado de todos los Clientes
 export const getClients = async (req, res) => {
     try {
-        const clients = await userModel.find();
+        const query = {...req.query}
+        const clients = await userModel.find(query);
         res.json(clients);
     } catch (error) {
         res.status(500).json({ message: error.message });
