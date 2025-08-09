@@ -7,6 +7,8 @@ export const createProduct = async (req, res) => {
         const { name, price, amount} = req.body;
 
         const productFound = await productModel.findOne({ _id });
+ 
+        
 
         if (productFound)
             return res.status(400).json({ message: "Ya existe este producto" });
