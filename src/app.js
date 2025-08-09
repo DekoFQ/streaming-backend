@@ -8,7 +8,7 @@ import authRoutes from './routes/auth.routes.js';
 import entityRoutes from './routes/entity.routes.js'; // de Diego-Romero
 import clientRoutes from './routes/client.routes.js'; // de santiago
 import productRoutes from './routes/product.routes.js';
-import saleRoutes from './routes/sale.routes.js';
+import saleRoutes from './routes/sale.routes.js'; 
 
 const app = express();
 
