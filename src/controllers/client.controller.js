@@ -90,12 +90,18 @@ export const updateClient = async (req, res) => {
 export const deleteClient = async (req, res) => {
     try {
 
-        const deleteClient = await userModel.findByIdAndDelete(req.params._id);
-        if (!deleteClient) return res.status(404).json({ message: "Cliente no encontrado" });
+        const { _id } = req.params;
 
-        // Eliminar productos asociados al cliente
-        // await deleteProduct(deleteClient._id);
-        
+        const productFound = await productModel.find({"soldTo._id": _id})
+
+        // length sirve para contar todo lo que esta trayendo el productFound
+        if (productFound.length > 0){
+            await productModel.deleteMany({"soldTo._id": _id})
+        }
+
+        await userModel.findByIdAndDelete({ _id });
+
+        return res.json({menssage: "Cliente Eliminado y productos asociados eliminados"})
 
         res.json({ menssage: "Cliente eliminado exitosamente" });
         console.log("Cliente eliminado:", deleteClient);

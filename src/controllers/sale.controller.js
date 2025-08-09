@@ -46,6 +46,7 @@ export const createSale = async (req, res) => {
         await newSale.save();
 
         await productModel.findByIdAndUpdate(product._id, {
+            active: false,
             soldTo: {
                 _id: client._id,
                 name: client.name,
@@ -54,6 +55,8 @@ export const createSale = async (req, res) => {
         });
 
         const savedSale = await newSale.save();
+
+
         console.log("Venta creada", savedSale);
         res.status(201).json(savedSale);
     } catch (error) {
