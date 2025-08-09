@@ -45,7 +45,7 @@ export const getEntitie = async (req, res) => {
         const {_id} = req.params
         const entitie = await entityModels.findById(_id)
 
-        if(!entitie) return res.status(404).json({message: 'Entitie not found'})
+        if(!entitie) return res.status(404).json({message: 'Entidad no encontrada'})
 
         res.json(entitie)
     } catch (error) {
@@ -77,9 +77,9 @@ export const deleteEntitie = async (req, res) => {
 
         const deleteEntitie = await entityModels.deleteOne({_id})
 
-        if(!deleteEntitie) return res.status(404).json({message: "Entitie not found"})
+        if(!deleteEntitie) return res.status(404).json({message: "No se encontro la entidad"})
 
-        res.json({message: "Entitie deleted"})
+        res.json({message: "Entidad eliminada exitosamente"})
     } catch (error) {
         return res.status(500).json({message: error.message})
     }

@@ -15,7 +15,7 @@ const userSchema = new Schema({
     enum: ["ADMIN", "VENDEDOR", "CLIENTE"],
     default: "CLIENTE"
   },
-  active: { type: Boolean, default: true },
+  // active: { type: Boolean, default: true },
 },
 {
   _id: false,

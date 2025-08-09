@@ -4,9 +4,10 @@ import { connectDB } from './db.js';
 import cookieParser from 'cookie-parser';
 
 import authRoutes from './routes/auth.routes.js';
-import entityRoutes from './routes/entity.routes.js'; 
-//import clientRoutes from './routes/client.routes.js'; 
+import entityRoutes from './routes/entity.routes.js';
+import clientRoutes from './routes/client.routes.js';
 import productRoutes from './routes/product.routes.js';
+import saleRoutes from './routes/sale.routes.js';
 
 const app = express();
 
@@ -17,7 +18,7 @@ const allowedOrigins = [
   'http://127.0.0.1:5501',
 ];
 
-//CORs
+// CORS
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -33,9 +34,16 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-app.use('/api', authRoutes, entityRoutes, /*clientRoutes,*/ productRoutes);
+// Rutas
+app.use('/api', authRoutes);
+app.use('/api', entityRoutes);
+app.use('/api', clientRoutes);
+app.use('/api', productRoutes);
+app.use('/api', saleRoutes);
 
+// Conexión a base de datos y levantamiento del servidor
 connectDB();
+
 app.listen(3000, () => {
-  console.log('🚀 SERVER ON PORT', 3000);
+  console.log('🚀 SERVER ON PORT 3000');
 });
