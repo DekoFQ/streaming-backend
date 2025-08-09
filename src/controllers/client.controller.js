@@ -103,8 +103,6 @@ export const deleteClient = async (req, res) => {
 
         return res.json({menssage: "Cliente Eliminado y productos asociados eliminados"})
 
-        res.json({ menssage: "Cliente eliminado exitosamente" });
-        console.log("Cliente eliminado:", deleteClient);
 
     } catch (error) {
         res.status(500).json({ message: error.message });
