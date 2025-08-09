@@ -1,59 +1,46 @@
 import usersModel from "../models/users.model.js";
 import bcryptjs from "bcryptjs";
-import { createAccessToken } from "../libs/jwt.js"
-import jwt from "jsonwebtoken"
+import { createAccessToken } from "../libs/jwt.js";
 import { sendEmailWelcome } from "./email.controller.js";
 
 export const register = async (req, res) => {
   try {
-    // Trabajado con metodo POST
-    const { firstName, lastName, email, password, rol } = req.body;
+    const { firstName, lastName, email, password, rol, active } = req.body;
 
-    // desde aqui se estan validando que no hayan usuarios existentes con el mismo Email
-    // findOne, find(Todos los datos), se utiliza para buscar en la base de datos
-    const userFound = await usersModel.findOne({ email })
+    const userFound = await usersModel.findOne({ email });
+    if (userFound) return res.status(400).json({ message: "Este correo ya está registrado" });
 
-    if (userFound)
-      return res.status(400).json({ menssage: "Este correo ya esta registrado" })
+    const passwordHash = await bcryptjs.hash(password, 10);
 
-    const passwordHash = await bcryptjs.hash(password, 10)
-
-    // Aqui se esta guardando los usuarios
     const newUser = await new usersModel({
       firstName,
       lastName,
       email,
       password: passwordHash,
-      rol
-    }).save()
+      rol,
+      active
+    }).save();
 
     // Esta parte es para enviar un correo de bienvenida al usuario y sin consumo de producto
     await sendEmailWelcome(email, firstName, lastName, "https://www.netflix.com");
 
-    console.log("Nuevo usuario creado", newUser);
-    console.log("Usuario creado con exito");
-
-    // Creación del token
-    const token = await createAccessToken({ _id: newUser._id })
-
+    const token = await createAccessToken({ _id: newUser._id });
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false, // pon true si usas HTTPS
-      sameSite: 'Lax' // o 'None' si secure: true
+      secure: false,
+      sameSite: 'Lax'
     });
 
+    res.json({ message: "Usuario registrado con éxito" });
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    res.status(500).json({ message: error.message });
   }
-}
+};
 
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    if (!email || !password)
-      return res.status(400).json({ message: 'Email y contraseña requeridos' });
 
     const userFound = await usersModel.findOne({ email });
     if (!userFound) return res.status(404).json({ message: 'Usuario no existente' });
@@ -63,44 +50,38 @@ export const login = async (req, res) => {
 
     const token = await createAccessToken({ _id: userFound._id });
 
-    // ✅ Cookie correctamente configurada
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false, // true si usas HTTPS
-      sameSite: 'Lax', // o 'None' si secure: true
-      maxAge: 1000 * 60 * 60 * 24 // 1 día
+      secure: false,
+      sameSite: 'Lax',
+      maxAge: 1000 * 60 * 60 * 24
     });
 
-    // ✅ Devolver datos del usuario
     res.json({
       _id: userFound._id,
-      username: userFound.username,
+      firstName: userFound.firstName,
+      lastName: userFound.lastName,
       email: userFound.email,
-      createdAt: userFound.createdAt,
-      updatedAt: userFound.updatedAt
+      rol: userFound.rol
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-
 export const logout = (req, res) => {
-  res.cookie('token', '', {
-    expires: new Date(0)
-  })
-
-  return res.sendStatus(200)
-}
+  res.cookie('token', '', { expires: new Date(0) });
+  return res.sendStatus(200);
+};
 
 export const profile = async (req, res) => {
   const userFound = await usersModel.findById(req.user._id);
-
-  if (!userFound) return res.status(400).json({ message: "User not found" });
+  if (!userFound) return res.status(400).json({ message: "Usuario no encontrado" });
 
   return res.json({
     _id: userFound._id,
-    username: userFound.username,
+    firstName: userFound.firstName,
+    lastName: userFound.lastName,
     email: userFound.email,
     rol: userFound.rol,
     createdAt: userFound.createdAt,
@@ -109,34 +90,57 @@ export const profile = async (req, res) => {
 };
 
 
-
-// Aqui empezaremos a hacer la actualizacion del usuario
-export const userUpdate = async (req, res) => {
+export const updateProfile = async (req, res) => {
   try {
-    const { _id } = req.params
-    const { firstName, lastName, email, password, rol } = req.body
+    const { firstName, lastName, email } = req.body;
 
-    const userFound = await usersModel.findOne({ _id })
+    const updatedUser = await usersModel.findByIdAndUpdate(
+      req.user._id,
+      { firstName, lastName, email },
+      { new: true }
+    );
 
-    const passwordHash = await bcryptjs.hash(password, 10)
-
-    if (!userFound)
-      return res.status(404).json({ menssage: "No existe pa :c" })
-
-    const updateUser = await usersModel.findOneAndUpdate({ _id }, {
-      $set: {
-        firstName,
-        lastName,
-        email,
-        password: passwordHash,
-        rol
-      }
-    }, { new: true })
-
-    res.json(updateUser)
-
-
+    res.json({ message: "Perfil actualizado con éxito", user: updatedUser });
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    res.status(500).json({ message: error.message });
   }
-}
+};
+
+export const changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    const user = await usersModel.findById(req.user._id);
+    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+
+    const isMatch = await bcryptjs.compare(currentPassword, user.password);
+    if (!isMatch) return res.status(400).json({ message: "Contraseña actual incorrecta" });
+
+    const hashedPassword = await bcryptjs.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    res.json({ message: "Contraseña actualizada con éxito" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+export const deleteAccount = async (req, res) => {
+  try {
+    const user = await usersModel.findById(req.user._id);
+    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+
+    if (user.rol !== "CLIENTE") {
+      return res.status(403).json({ message: "Solo los clientes pueden eliminar su cuenta" });
+    }
+
+    await usersModel.findByIdAndDelete(req.user._id);
+
+    res.clearCookie("token");
+    res.json({ message: "Cuenta eliminada con éxito" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
