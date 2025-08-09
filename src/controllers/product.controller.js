@@ -76,7 +76,6 @@ export const updateProduct = async (req, res) => {
         const productFound = await productModel.findById({ _id });
         if (!productFound) return res.status(404).json({ message: "Producto no encontrado" });
 
- 
         
 
 
