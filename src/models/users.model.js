@@ -14,7 +14,8 @@ const userSchema = new Schema({
   rol: {type: String,
     enum: ["ADMIN", "VENDEDOR", "CLIENTE"],
     default: "CLIENTE"
-  }
+  },
+  // active: { type: Boolean, default: true },
 },
 {
   _id: false,

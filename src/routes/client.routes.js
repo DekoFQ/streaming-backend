@@ -1,11 +1,12 @@
-import {Router} from "express"
-import { createClient, getClients, getClientById, updateClient, deleteClient } from "../controllers/client.controller.js"
+import { Router } from "express";
+import { createClient, getClients, getClientById, updateClient, deleteClient } from "../controllers/client.controller.js";
 
-const router = Router()
+const router = Router();
 
-router.post("/create", createClient)
-router.get("/getClients", getClients)
-router.get("/getClientById/:_id", getClientById)
-router.post("/updateClient/:_id", updateClient)
-router.get("/deleteClient/:_id", deleteClient)
-export default router
+router.post("/clients", createClient);
+router.get("/clients", getClients);
+router.get("/clients/:_id", getClientById);
+router.put("/clients/:_id", updateClient);
+router.delete("/clients/:_id", deleteClient);
+
+export default router;

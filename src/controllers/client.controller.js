@@ -1,53 +1,38 @@
-import clientModel from "../models/client.model.js";
-import clientProductModel from "../models/clientProduct.model.js";
+import userModel from "../models/users.model.js";
 import { sendEmailWelcome } from "./email.controller.js";
+import productModel from "../models/product.model.js";
+import bcryptjs from "bcryptjs";
 
 // Crear un nuevo Cliente
 // Se crea el cliente y se envía un correo de bienvenida
 export const createClient = async (req, res) => {
     try {
-        const { _id } = req.params;
-        const { firstName, lastName, phone, email, productId } = req.body;
 
-        const clientFound = await clientModel.findOne({
-            $or: [{ email }, { phone }]
-        })
+        const { firstName, lastName, email, password } = req.body;
 
-        console.log("Cliente encontrado:", clientFound);
+        // Se utiliza para buscar por el email o el telefono
+        // const clientFound = await clientModel.findOne({
+        //     $or: [{ email }, { phone }]
+        // })
+
+
+        const clientFound = await userModel.findOne({ email });
 
         if (clientFound)
-            return res.status(400).json({ message: "Ya existe un cliente con ese Email o con ese numero telefonico" });
+            return res.status(400).json({ message: "Ya existe un cliente con ese Email" });
 
-        const relationFound = await clientProductModel.findOne({
-            clientId: _id,
-            productId: productId
-        });
+        const passwordHash = await bcryptjs.hash(password, 10)
 
-        if (relationFound && relationFound.active === true) {
-            return res.status(400).json({ message: "El cliente, ya cuenta con este producto activo" });
-        }
-
-        // console.log("Relación encontrada:", relationFound);
-
-        const newClient = await new clientModel({
+        const newClient = await new userModel({
             firstName,
             lastName,
-            phone,
             email,
-            productId
-        }).save();
-
-
-
-        const newRelation = await new clientProductModel({
-            clientId: newClient._id,
-            productId: productId,
-            active: true
+            password: passwordHash
         }).save();
 
 
         // Enviar correo de bienvenida
-        await sendEmailWelcome(email, firstName, lastName);
+        await sendEmailWelcome(email, password, firstName, lastName);
 
         console.log("Nuevo Cliente creado", newClient);
 
@@ -62,7 +47,7 @@ export const createClient = async (req, res) => {
 // Traer el listado de todos los Clientes
 export const getClients = async (req, res) => {
     try {
-        const clients = await clientModel.find();
+        const clients = await userModel.find();
         res.json(clients);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -74,8 +59,8 @@ export const getClientById = async (req, res) => {
     try {
 
         const { _id } = req.params;
-        console.log("ID recibido:", _id);
-        const getClient = await clientModel.findById({ _id });
+        // console.log("ID recibido:", _id);
+        const getClient = await userModel.findById({ _id });
         console.log("Cliente encontrado:", getClient);
 
         if (!getClient) return res.status(404).json({ menssage: "Cliente no encontrado" });
@@ -90,10 +75,10 @@ export const getClientById = async (req, res) => {
 export const updateClient = async (req, res) => {
     try {
 
-        const updateClient = await clientModel.findByIdAndUpdate(req.params._id, req.body, { new: true });
+        const updateClient = await userModel.findByIdAndUpdate(req.params._id, req.body, { new: true });
         if (!updateClient) return res.status(404).json({ message: "Cliente no encontrado" });
 
-        res.json(clientFound);
+        res.json(updateClient);
         console.log("Cliente actualizado:", updateClient);
 
 
@@ -105,8 +90,12 @@ export const updateClient = async (req, res) => {
 export const deleteClient = async (req, res) => {
     try {
 
-        const deleteClient = await clientModel.findByIdAndDelete(req.params._id);
+        const deleteClient = await userModel.findByIdAndDelete(req.params._id);
         if (!deleteClient) return res.status(404).json({ message: "Cliente no encontrado" });
+
+        // Eliminar productos asociados al cliente
+        // await deleteProduct(deleteClient._id);
+        
 
         res.json({ menssage: "Cliente eliminado exitosamente" });
         console.log("Cliente eliminado:", deleteClient);
