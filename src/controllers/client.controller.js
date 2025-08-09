@@ -1,6 +1,6 @@
 import userModel from "../models/users.model.js";
 import { sendEmailWelcome } from "./email.controller.js";
-import {deleteProduct} from "./product.controller.js";
+import productModel from "../models/product.model.js";
 import bcryptjs from "bcryptjs";
 
 // Crear un nuevo Cliente
@@ -59,7 +59,7 @@ export const getClientById = async (req, res) => {
     try {
 
         const { _id } = req.params;
-        console.log("ID recibido:", _id);
+        // console.log("ID recibido:", _id);
         const getClient = await userModel.findById({ _id });
         console.log("Cliente encontrado:", getClient);
 

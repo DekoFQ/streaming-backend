@@ -7,7 +7,7 @@ import { sendEmailWelcome } from "./email.controller.js";
 export const register = async (req, res) => {
   try {
     // Trabajado con metodo POST
-    const { firstName, lastName, email, password, rol, active } = req.body;
+    const { firstName, lastName, email, password, rol } = req.body;
 
     // desde aqui se estan validando que no hayan usuarios existentes con el mismo Email
     // findOne, find(Todos los datos), se utiliza para buscar en la base de datos
@@ -24,8 +24,7 @@ export const register = async (req, res) => {
       lastName,
       email,
       password: passwordHash,
-      rol,
-      active
+      rol
     }).save()
 
     // Esta parte es para enviar un correo de bienvenida al usuario y sin consumo de producto
@@ -38,11 +37,11 @@ export const register = async (req, res) => {
     const token = await createAccessToken({ _id: newUser._id })
 
 
-res.cookie("token", token, {
-  httpOnly: true,
-  secure: false, // pon true si usas HTTPS
-  sameSite: 'Lax' // o 'None' si secure: true
-});
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false, // pon true si usas HTTPS
+      sameSite: 'Lax' // o 'None' si secure: true
+    });
 
   } catch (error) {
     res.status(500).json({ message: error.message })
